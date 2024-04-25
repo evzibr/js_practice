@@ -1,0 +1,84 @@
+/* CSS Reset */
+/* ----------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+input,
+button,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ----------- */
+body {
+  font-family: "Poppins", sans-serif;
+  height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+  position: relative;
+}
+a::after {
+  content: "";
+  position: absolute;
+  display: block;
+  background-color: #e9bb04;
+  height: 3px;
+  width: 0%;
+  left: 0;
+  top: 1.4rem;
+  transition: 0.3s;
+}
+a:hover::after {
+  width: 100%;
+}
+
+.container {
+  padding: 2rem;
+}
+
+.headline__h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+.headline__h2::after {
+  content: "";
+  position: absolute;
+  display: block;
+  background-color: #ffd93d;
+  height: 0.75rem;
+  width: 18%;
+  left: 2rem;
+  bottom: 0.3rem;
+  z-index: -1;
+}
+
+.list {
+  line-height: 1.75;
+}/*# sourceMappingURL=main.css.map */
