@@ -1,6 +1,6 @@
 'use strict';
 
-// Selecting elements
+// Selecting elements for the game
 const player0 = document.querySelector('.player--0');
 const player1 = document.querySelector('.player--1');
 const score0 = document.getElementById('score--0');
@@ -13,7 +13,13 @@ const btnNew = document.querySelector('.btn--new');
 const btnRoll = document.querySelector('.btn--roll');
 const btnHold = document.querySelector('.btn--hold');
 
-// Starting conditions
+// Selecting element for the popup
+const btnRules = document.querySelector('.btn--rules');
+const popup = document.querySelector('.popup');
+const overlay = document.querySelector('.popup--overlay');
+const btnClose = document.querySelector('.popup--close');
+
+// Starting conditions: we can declare empty variable all together in one line
 let scores, currentScore, activePlayer, playing;
 
 const init = function () {
@@ -97,6 +103,21 @@ const resetGame = function () {
   init();
 };
 
+const togglePopup = function () {
+  popup.classList.toggle('hidden');
+  overlay.classList.toggle('hidden');
+};
+
 btnRoll.addEventListener('click', rollDice);
 btnHold.addEventListener('click', holdScore);
 btnNew.addEventListener('click', resetGame);
+
+btnRules.addEventListener('click', togglePopup);
+btnClose.addEventListener('click', togglePopup);
+overlay.addEventListener('click', togglePopup);
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape') {
+    togglePopup();
+  }
+});
