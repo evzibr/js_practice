@@ -1,16 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: inherit;
 }
-
 :root {
   --color-primary: #0e808f;
   --color-secondary: #3496a3;
   --color-white: #ffffff;
   --color-black: #000000;
-  --transition: all 0.3s ease-in-out;
 }
 
 html {
@@ -36,30 +35,21 @@ body {
 /* LAYOUT */
 main {
   position: relative;
-  max-width: 100rem;
   width: 100rem;
-  /* min-width: 100rem; */
-  margin-inline: 3rem;
   height: 60rem;
   background-color: rgba(255, 255, 255, 0.35);
-  -webkit-backdrop-filter: blur(200px);
   backdrop-filter: blur(200px);
   filter: blur();
   box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.25);
-  /* overflow: hidden; */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  @media (max-width: 806px) {
-    grid-template-columns: 1fr;
-  }
+  overflow: hidden;
+  display: flex;
 }
 
 .player {
   flex: 50%;
   padding: 9rem;
   display: flex;
-  flex-direction: column;
+  // flex-direction: column;
   align-items: center;
   transition: all 0.75s;
 }
@@ -85,11 +75,9 @@ main {
 .player--active {
   background-color: rgba(255, 255, 255, 0.4);
 }
-
 .player--active .name {
   font-weight: 700;
 }
-
 .player--active .score {
   font-weight: 400;
 }
@@ -99,10 +87,12 @@ main {
 }
 
 .current {
+  /* background-color: #c7365f; */
   background-color: var(--color-primary);
-  color: var(--color-white);
   opacity: 0.8;
-  width: 20rem;
+  /* border-radius: 9px; */
+  color: var(--color-white);
+  width: 65%;
   padding: 2rem;
   text-align: center;
   transition: all 0.75s;
@@ -111,7 +101,7 @@ main {
 .current-label {
   text-transform: uppercase;
   margin-bottom: 1rem;
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   color: var(--color-white);
 }
 
@@ -132,12 +122,61 @@ main {
   text-transform: uppercase;
   cursor: pointer;
   font-weight: 400;
-  transition: var(--transition);
+  transition: all 0.2s;
   background-color: var(--color-white);
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   padding: 1rem 2.2rem;
   box-shadow: 0 1.75rem 3.5rem rgba(0, 0, 0, 0.1);
+}
+
+.btn--new {
+  top: 4rem;
+}
+
+.btn--roll {
+  top: 39.3rem;
+}
+
+.btn--hold {
+  top: 45rem;
+}
+
+.btn--rules {
+  position: absolute;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-family: inherit;
+  padding: 1rem 2.2rem;
+  top: 2rem;
+  right: 2rem;
+  color: var(--color-white);
+  font-size: 1.6rem;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: all 0.3s ease-out;
+  border: 1px solid var(--color-white);
+}
+
+.btn--rules::after {
+  content: "";
+  background-color: var(--color-white);
+  display: block;
+  height: calc(100% + 2px);
+  width: 0%;
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  transition: 0.3s;
+  z-index: -1;
+}
+
+.btn--rules:hover {
+  color: #000;
+}
+
+.btn--rules:hover.btn--rules::after {
+  width: calc(100% + 2px);
 }
 
 .btn:hover {
@@ -152,55 +191,6 @@ main {
 
 .btn:focus {
   outline: none;
-}
-
-.btn--rules {
-  left: unset;
-  top: 2rem;
-  right: 2rem;
-  transform: none;
-  padding: 1rem 2.2rem;
-  color: var(--color-white);
-  background-color: transparent;
-  border: 1px solid var(--color-white);
-  transition: var(--transition);
-}
-
-.btn--rules::after {
-  content: "";
-  background-color: var(--color-white);
-  display: block;
-  height: calc(100% + 2px);
-  width: 0%;
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  transition: var(--transition);
-  z-index: -1;
-}
-
-.btn--rules:hover {
-  color: #444;
-}
-
-.btn--rules:hover.btn--rules::after {
-  width: calc(100% + 2px);
-}
-
-.btn--rules:active {
-  transform: none;
-}
-
-.btn--new {
-  top: 4rem;
-}
-
-.btn--roll {
-  top: 39.3rem;
-}
-
-.btn--hold {
-  top: 45rem;
 }
 
 .dice {
@@ -228,10 +218,10 @@ main {
   max-width: 66rem;
   padding: 2rem 3rem 2rem 3rem;
   font-size: 1.6rem;
-  transition: var(--transition);
+  transition: all 0.5s ease-out;
 }
 
-.popup-headline {
+h3 {
   text-transform: uppercase;
   color: var(--color-primary);
 }
@@ -248,7 +238,7 @@ main {
   cursor: pointer;
   border: none;
   background: none;
-  transition: var(--transition);
+  transition: all 0.2s ease-out;
 }
 
 .popup--close:hover {
@@ -266,9 +256,9 @@ main {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
-  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   z-index: 5;
+  transition: all 0.5s ease-out;
 }
 
 ul {
@@ -277,4 +267,5 @@ ul {
 
 .hidden {
   display: none;
+  transition: all 0.5s ease-out;
 }
