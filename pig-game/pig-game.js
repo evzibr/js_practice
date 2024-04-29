@@ -103,21 +103,26 @@ const resetGame = function () {
   init();
 };
 
-const togglePopup = function () {
-  popup.classList.toggle('hidden');
-  overlay.classList.toggle('hidden');
+const openPopup = function () {
+  popup.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+};
+
+const closePopup = function () {
+  popup.classList.add('hidden');
+  overlay.classList.add('hidden');
 };
 
 btnRoll.addEventListener('click', rollDice);
 btnHold.addEventListener('click', holdScore);
 btnNew.addEventListener('click', resetGame);
 
-btnRules.addEventListener('click', togglePopup);
-btnClose.addEventListener('click', togglePopup);
-overlay.addEventListener('click', togglePopup);
+btnRules.addEventListener('click', openPopup);
+btnClose.addEventListener('click', closePopup);
+overlay.addEventListener('click', closePopup);
 
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape') {
-    togglePopup();
+    closePopup();
   }
 });
