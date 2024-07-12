@@ -82,12 +82,12 @@ const displayMovements = function (movements) {
 // console.log(containerMovements.innerHTML);
 
 // DISPLAY CURRENT BALANCE
-// labelBalance
-const calculateBalance = function (movements) {
-  const balance = movements.reduce(function (accumulator, current) {
+const calculateBalance = function (account) {
+  // we calculate the overall balanace and save if in the new variable inside out account-object (and call it balance)
+  account.balance = account.movements.reduce(function (accumulator, current) {
     return accumulator + current;
   }, 0);
-  labelBalance.textContent = `${balance}€`;
+  labelBalance.textContent = `${account.balance}€`;
 };
 
 // CALCULATE TOTALS BELOW - USING METHODS-CHAINING
@@ -134,7 +134,13 @@ const createUsername = function (accounts) {
 };
 
 createUsername(accounts);
-console.log(accounts);
+
+// UPDATE UI
+const updateUI = function (currentAccount) {
+  displayMovements(currentAccount.movements); // Display movements
+  calculateBalance(currentAccount); // Display balance
+  calculateTotals(currentAccount); // Display summary (below)
+};
 
 // IMPLEMENTING LOGIN
 // 1. Event handler
@@ -161,13 +167,35 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    // Display movements
-    displayMovements(currentAccount.movements);
+    // Update UI
+    updateUI(currentAccount);
+  }
+});
 
-    // Display balance
-    calculateBalance(currentAccount.movements);
+// IMPLEMENTING TRANSFERS
+// inputTransferTo
+// inputTransferAmount
+//
+btnTransfer.addEventListener('click', function (event) {
+  event.preventDefault();
 
-    // Display summary
-    calculateTotals(currentAccount);
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(function (account) {
+    return account.username === inputTransferTo.value;
+  });
+  console.log(amount, receiverAccount);
+
+  if (
+    amount > 0 && // check that we transfer more than 0
+    receiverAccount && // check if the receiverAccount exists at all
+    amount <= currentAccount.balance && // check that we have sufficient amount to transfer
+    receiverAccount.username !== currentAccount.username // check that we don't transfert to our own account
+  ) {
+    inputTransferAmount.value = inputTransferTo.value = ''; // clear input fields
+    inputTransferAmount.blur();
+    // Doing the transfer
+    currentAccount.movements.push(-amount);
+    receiverAccount.movements.push(amount);
+    updateUI(currentAccount);
   }
 });
