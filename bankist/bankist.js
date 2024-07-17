@@ -1,7 +1,5 @@
 'use strict';
 
-console.log('it works!');
-
 // Data
 const account1 = {
   owner: 'Jonas Schmedtmann',
@@ -101,7 +99,6 @@ const calculateTotals = function (account) {
     .reduce((acc, movement) => (acc = acc + movement), 0);
   labelSumIn.textContent = `${incomes}€`;
   labelSumOut.textContent = `${Math.abs(withdrawals)}€`;
-  console.log(incomes);
 
   const interest = account.movements
     .filter((movement) => movement > 0)
@@ -143,6 +140,7 @@ const updateUI = function (currentAccount) {
 };
 
 // IMPLEMENTING LOGIN
+
 // 1. Event handler
 let currentAccount; // creating an empty variable that will be responsible for each particular account that logs in
 btnLogin.addEventListener('click', function (event) {
@@ -153,7 +151,6 @@ btnLogin.addEventListener('click', function (event) {
   currentAccount = accounts.find(function (account) {
     return account.username === inputLoginUsername.value;
   });
-  console.log(currentAccount);
 
   // optional chaining to check if currentAccount exists and if so check if it's the same as entered pin
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
@@ -173,9 +170,7 @@ btnLogin.addEventListener('click', function (event) {
 });
 
 // IMPLEMENTING TRANSFERS
-// inputTransferTo
-// inputTransferAmount
-//
+
 btnTransfer.addEventListener('click', function (event) {
   event.preventDefault();
 
@@ -198,4 +193,42 @@ btnTransfer.addEventListener('click', function (event) {
     receiverAccount.movements.push(amount);
     updateUI(currentAccount);
   }
+});
+
+// IMPLEMENTING REQUEST LOAN
+btnLoan.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some((movement) => movement >= amount * 0.1)) {
+    // add movement
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+    inputLoanAmount.value = '';
+  }
+});
+
+// IMPLEMENTING CLOSE ACCOUNT (findIndex-Method)
+
+btnClose.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(function (account) {
+      return account.username === currentAccount.username;
+    });
+    // delete account
+    accounts.splice(index, 1); // remove element with searched index from accounts array
+    // hide UI and display delete-message
+
+    containerApp.style.opacity = 0;
+    labelWelcome.innerHTML = `${
+      currentAccount.owner.split(' ')[0]
+    }, your account have been deleted`;
+  }
+  inputLoginUsername.value = inputLoginPin.value = '';
 });
