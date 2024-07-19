@@ -58,10 +58,16 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // DISPLAY MONEY-MOVEMENTS (desposits and withdrawals)
-const displayMovements = function (movements) {
+// here 'sort'-parameter is used for furthure sorting and is false by default
+const displayMovements = function (movements, sort = false) {
   // removing hardcoded movements (3 days ago, 4000€)
   containerMovements.innerHTML = '';
-  movements.forEach(function (movement, i) {
+
+  // create new variable that will depend on is the sort-button is clicked or not
+  // using slice-method to create a copy of movements-array
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach(function (movement, i) {
     const type = movement > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -170,7 +176,6 @@ btnLogin.addEventListener('click', function (event) {
 });
 
 // IMPLEMENTING TRANSFERS
-
 btnTransfer.addEventListener('click', function (event) {
   event.preventDefault();
 
@@ -210,7 +215,6 @@ btnLoan.addEventListener('click', function (event) {
 });
 
 // IMPLEMENTING CLOSE ACCOUNT (findIndex-Method)
-
 btnClose.addEventListener('click', function (event) {
   event.preventDefault();
 
@@ -231,4 +235,13 @@ btnClose.addEventListener('click', function (event) {
     }, your account have been deleted`;
   }
   inputLoginUsername.value = inputLoginPin.value = '';
+});
+
+// IMPLEMENTING SORT-BUTTON FUNTIONALITY
+// creating a variable that registers whether the movements are sorted
+let sorted = false;
+btnSort.addEventListener('click', function (event) {
+  event.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
