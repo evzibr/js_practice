@@ -234,7 +234,7 @@ btnClose.addEventListener('click', function (event) {
       currentAccount.owner.split(' ')[0]
     }, your account have been deleted`;
   }
-  inputLoginUsername.value = inputLoginPin.value = '';
+  inputCloseUsername.value = inputClosePin.value = '';
 });
 
 // IMPLEMENTING SORT-BUTTON FUNTIONALITY
@@ -244,4 +244,21 @@ btnSort.addEventListener('click', function (event) {
   event.preventDefault();
   displayMovements(currentAccount.movements, !sorted);
   sorted = !sorted;
+});
+
+// EX. Array.from using querySelectorAll. Let say we only have money-movements in UI and we want to create an array from those values and calculate its sum.
+
+// get the UI-movements when we click on the balance-label
+labelBalance.addEventListener('click', function () {
+  // create an array from those UI-numbers & replacing €-sign with nothing using map-method
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'), // node-list that's an array-like structure
+    function (element) {
+      return Number(element.textContent.replace('€', ''));
+    }
+  );
+  console.log(movementsUI);
+  // Another way of creating an array from node-list:
+  const movementsUI2 = [...document.querySelectorAll('.movements__value')];
+  console.log(movementsUI2); // ... and then do the mapping
 });
