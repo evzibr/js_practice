@@ -271,9 +271,9 @@ let timer; // need this variable to persist between different logins
 
 // ------------------------------------------
 // FAKING CONSTANT LOG-IN - DELETE LATER
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 1;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 1;
 
 // ------------------------------------------
 
