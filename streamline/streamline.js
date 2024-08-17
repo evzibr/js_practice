@@ -163,7 +163,7 @@ const displayMovements = function (account, sort = false) {
     const html = `
       <div class="movements__row">
           
-          <img class="icon movements__type movements__type--${type}" src="/streamline/circle-arrow-${type}.svg" />
+          <img class="icon movements__type movements__type--${type}" src="../streamline/circle-arrow-${type}.svg" />
 
           <div class="movements__date">${displayDate}</div>
         <div class="movements__value">${formattedMovement}</div>
