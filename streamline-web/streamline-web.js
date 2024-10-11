@@ -49,3 +49,5 @@ const cookieBanner = function () {
 };
 
 cookieBanner();
+
+// Implementing smooth scrolling
