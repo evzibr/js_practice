@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "../complete-javascript-course-master/13-Advanced-DOM-Bankist/starter"
+    },
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "js_practice"
+  }
+}
