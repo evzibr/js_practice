@@ -57,7 +57,7 @@ console.log(getComputedStyle(message).height);
 message.style.height = Number.parseFloat(getComputedStyle(message).height) + 4 + 'px';
 
 // CUSTOM STYLES (the ones defined in root)
-document.documentElement.style.setProperty('--color-primary', 'violet');
+// document.documentElement.style.setProperty('--color-primary', 'violet');
 
 // ATTRIBUTES
 
@@ -68,10 +68,10 @@ console.log(logo.src); // gives you relative URL (folder & name)
 
 const link = document.querySelector('.nav__link--btn');
 console.log(link.href); // absolute value
-console.log(link.getAttribute('href')); // value like in HTML
+console.log(link.getAttribute('href')); // value like in HTML eg href="#section--1"
 
 console.log(logo.getAttribute('src'));
-console.log(logo.className); // shows css-class of teh element
+console.log(logo.className); // shows css-class of the element
 // NOTE: js can only display the names of standard attributes, not random custom created one. Eg: if we create an attribute "designer" on our logo-image it can't be looked up like src or alt (will return 'undefined')
 console.log(logo.designer);
 // there is a way of getting custom attributes:
@@ -89,3 +89,171 @@ logo.classList.add('c');
 logo.classList.remove('c');
 logo.classList.toggle('c');
 logo.classList.contains('c');
+
+// ----- JS WAY FOR SCROLL TO ------
+
+// just fyi: cuttent size of a viewport
+console.log(
+  'height/width viewport',
+  document.documentElement.clientHeight,
+  document.documentElement.clientWidth
+);
+
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.getElementById('section--1');
+
+btnScrollTo.addEventListener('click', function () {
+  section1.scrollIntoView({ behavior: 'smooth' });
+});
+
+// IMPLEMENTING PAGE NAVIGATION (smooth scrolling) FOR ALL MENU ITEMS (actually already handled using scroll:smooth in css, so this is more for practice purposes)
+
+// 1. without event delegation - problem here is that we're attaching EventListeners to each element and if there are a lot of elements - programm will become quite heavy pretty quick.... (continue reading at 2)
+// document.querySelectorAll('.nav__link').forEach(function (element) {
+//   element.addEventListener('click', function (e) {
+//     e.preventDefault();
+//     console.log(`Clicked on: ${this.textContent}`); // this points to the element that got clicked, so one of the .nav__link
+
+//     const id = this.getAttribute('href');
+//     console.log(id);
+//     document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+//   });
+// });
+
+// 2. with EVENT DELEGATION. Solution to that issue is to use event delegation - attacht EventListener to the parent element and use bubbling to trace click on children-elements back to the parent-element. This is done in two steps:
+
+// 1. Add EventListener to the common parent element
+document.querySelector('.nav__links').addEventListener('click', function (e) {
+  e.preventDefault();
+
+  // 2. Implementing "Matching strategy": we check if clicked element has a class we're interested in (.nav__link)
+  if (e.target.classList.contains('nav__link')) {
+    const id = e.target.getAttribute('href');
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+// IMPLEMENTING TABS
+// 1. selecting necessary elements
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabContent = document.querySelectorAll('.operations__content');
+
+// 2. attaching EventListeners to all the tabs using Event Delegation
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab');
+
+  // CAUTION: where there is no matching parent to be found js will return "null"
+  // and therefore throw an error when we try to attach class to it.
+  // To fix it we need to implement so called GUARD CLAUSE
+  if (!clicked) return; // if none of the tabs clicked, immediately return the function
+  // otherwise execute the following code:
+  // 1. Remove active classes from all the tabs
+  tabs.forEach(function (tab) {
+    tab.classList.remove('operations__tab--active');
+  });
+  tabContent.forEach(function (content) {
+    content.classList.remove('operations__content--active');
+  });
+  // 2. Activate clicked tab
+  clicked.classList.add('operations__tab--active'); // otherwise add the class
+  // 2. Activate the tab-content (using data-attribute)
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
+// 2. Determine what element originated the event
+
+// --------TYPES OF EVENTS & EVENT HANDLING - remove comment from next line to the next Theory-block
+
+// const h1 = document.querySelector('h1');
+
+// // Adding event handling
+// const logH1 = function (e) {
+//   console.log('addEventListener: this message appears when you hover over H1');
+
+//   // Removing Event handling - so we only listen to an Event once
+//   // h1.removeEventListener('mouseenter', logH1);
+// };
+
+// h1.addEventListener('mouseenter', logH1);
+// // We can also remove Event listening with a timer
+// setTimeout(() => h1.removeEventListener('mouseenter', logH1), 3000);
+
+// // Another way of attaching a listener to an element (old)
+
+// // h1.onmouseenter = function (e) {
+// //   console.log('onmouseenter: this message appears when you hover over H1');
+// // };
+
+// // EVENT PROPAGATION
+
+// // here we just prepare: create random color generator that we then later will use for the links
+// const randomInt = function (min, max) {
+//   return Math.floor(Math.random() * (max - min) + min);
+// };
+
+// const randomColor = () => `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
+// console.log(randomColor());
+
+// // Attaching eventListeners
+// document.querySelector('.nav__link').addEventListener('click', function (e) {
+//   this.style.backgroundColor = randomColor(); // 'this' points to the elements on which the event is happening, so in our case it's .nav__link
+//   console.log('LINK', e.target, e.currentTarget); // e.target - DOM-element where the click happened. e.g. ul, a etc.// e.currentTarget - is an element to which an eventListener is attached
+
+//   // NOTE: 'e.currentTarget' is the equals to 'this' - keyword
+
+//   //STOP EVENT PROPAGATION
+
+//   e.stopPropagation(); // generally not recommended but can be useful in big complicated apps
+// });
+
+// document.querySelector('.nav__links').addEventListener('click', function (e) {
+//   this.style.backgroundColor = randomColor();
+//   console.log('MENU', e.target, e.currentTarget);
+// });
+
+// document.querySelector('.nav').addEventListener('click', function (e) {
+//   this.style.backgroundColor = randomColor();
+//   console.log('NAV', e.target, e.currentTarget);
+// });
+
+// // By default eventListeners are happening during the bubbling phase ('false'). But we can set a 3rd parameter to 'true' in the eventListener. Then it will 'listen' during capturing phase.
+
+// ----------------
+
+// -------- DOM TRAVERSING --------
+
+// const h1 = document.querySelector('h1');
+// // 1. Going downwards: selecting child-elements. not only direct children, but any
+// console.log(h1.querySelectorAll('.highlight'));
+// // selecting direct children
+// console.log(h1.childNodes); // gives you ALL children including comments, br etc.
+// console.log(h1.children); // gives you only direct children - visible HTML-elements - HTMLCollection
+// h1.firstElementChild.style.color = 'white'; // changing color of the first h1-child
+// h1.lastElementChild.style.color = 'purple'; // changing color of the first h1-child
+
+// // 2. Going upwards: selecting parents
+// console.log(h1.parentNode); // gives you direct parent
+// console.log(h1.parentElement); // we're usually interested in this one. in this case it's the same
+
+// // 'closest' - finds the nearest parent of an element that matches a specified selector
+// (such as a class, ID, or element type). It checks the element itself first,
+// then traverses up the DOM tree to find the first matching ancestor.
+// h1.closest('.header').style.background = 'var(--gradient-secondary)';
+
+// // 3. Going sideways: selecting siblings (we can only access direct siblings)
+// console.log(h1.previousElementSibling);
+// console.log(h1.nextElementSibling);
+// // trick to find all siblengs: move up to parent element and search for all children
+// console.log(h1.parentElement.children); // returns HTMLCollection
+
+// // just for fun: spread all of h1.parentElement.children into an array
+// [...h1.parentElement.children].forEach(function (element) {
+//   if (element !== h1) {
+//     element.style.transform = 'scale(0.5)';
+//   }
+// });
+
+// ----------------
