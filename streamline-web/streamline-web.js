@@ -1,5 +1,5 @@
 'use strict';
-// NOT MAIN
+// TEST
 
 ///////////////////////////////////////
 // Modal window
