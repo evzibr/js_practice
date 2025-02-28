@@ -164,6 +164,22 @@ tabsContainer.addEventListener('click', function (e) {
     .classList.add('operations__content--active');
 });
 
+// FADE-OUT effect for menu when one tab is hovered over (incl. Logo)
+
+const nav = document.querySelector('.nav');
+nav.addEventListener('mouseover', function (e) {
+  // we don't need 'closest here since nav-element only has text (no span, no icons etc.), so the simple class-check is enough'
+  if (e.target.classList.contains('nav__link')) {
+    const clickedLink = e.target;
+    // selecting all the siblings: we search for a parent that matches our request
+    const siblings = clickedLink.closest('.nav');
+    console.log(siblings);
+  }
+});
+
+nav.addEventListener('mouseout', function (e) {});
+
+// ----------------- THEORY --------------------
 // 2. Determine what element originated the event
 
 // --------TYPES OF EVENTS & EVENT HANDLING - remove comment from next line to the next Theory-block
