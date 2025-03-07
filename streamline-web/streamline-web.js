@@ -165,19 +165,73 @@ tabsContainer.addEventListener('click', function (e) {
 });
 
 // FADE-OUT effect for menu when one tab is hovered over (incl. Logo)
-
 const nav = document.querySelector('.nav');
-nav.addEventListener('mouseover', function (e) {
-  // we don't need 'closest here since nav-element only has text (no span, no icons etc.), so the simple class-check is enough'
+const handleHover = function (e) {
+  // console.log(this, e.target);
   if (e.target.classList.contains('nav__link')) {
     const clickedLink = e.target;
-    // selecting all the siblings: we search for a parent that matches our request
-    const siblings = clickedLink.closest('.nav');
-    console.log(siblings);
-  }
-});
+    // selecting all the siblings of the hovered link: we search for a parent that matches our request
+    const siblings = clickedLink.closest('.nav').querySelectorAll('.nav__link');
+    // selection logo
+    const logo = clickedLink.closest('.nav').querySelector('img');
+    // we must use ARROW function here because When you use a regular function inside .forEach(), the value of this inside that function is not inherited from handleHover. Instead: in strict mode ("use strict"), 'this' inside the .forEach() callback is undefined. Arrow functions do not have their own this. Instead, they inherit 'this' from the surrounding function.
 
-nav.addEventListener('mouseout', function (e) {});
+    siblings.forEach((element) => {
+      if (element !== clickedLink) {
+        element.style.opacity = this;
+      }
+      logo.style.opacity = this;
+    });
+  }
+};
+
+// 1. this will not work because eventListener expects us to pass in a function
+// nav.addEventListener('mouseover', handleHover(e, 0.5));
+
+// 2. one option to make handleHover work is following (but it's still repetative):
+// nav.addEventListener('mouseover', function (e) {
+//   handleHover(e, 0.5);
+// });
+// nav.addEventListener('mouseout', function (e) {
+//   handleHover(e, 1);
+// });
+
+// 3. using bind()-method
+// passing "argument" into handler
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+// LONG VERSION OF THE CODE ABOVE
+// nav.addEventListener('mouseover', function (e) {
+//   // we don't need 'closest here since nav-element only has text (no span, no icons etc.), so the simple class-check is enough
+//   if (e.target.classList.contains('nav__link')) {
+//     const clickedLink = e.target;
+//     // selecting all the siblings of the hovered link: we search for a parent that matches our request
+//     const siblings = clickedLink.closest('.nav').querySelectorAll('.nav__link');
+//     // selection logo
+//     const logo = link.closest('.nav').querySelector('img');
+//     siblings.forEach(function (element) {
+//       if (element !== clickedLink) {
+//         element.style.opacity = 0.5;
+//       }
+//       logo.style.opacity = 0.5;
+//     });
+//   }
+// });
+
+// nav.addEventListener('mouseout', function (e) {
+//   if (e.target.classList.contains('nav__link')) {
+//     const clickedLink = e.target;
+//     const siblings = clickedLink.closest('.nav').querySelectorAll('.nav__link');
+//     const logo = link.closest('.nav').querySelector('img');
+//     siblings.forEach(function (element) {
+//       if (element !== clickedLink) {
+//         element.style.opacity = 1;
+//       }
+//       logo.style.opacity = 1;
+//     });
+//   }
+// });
 
 // ----------------- THEORY --------------------
 // 2. Determine what element originated the event
