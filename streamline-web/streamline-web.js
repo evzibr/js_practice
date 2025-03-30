@@ -328,3 +328,105 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 // });
 
 // ----------------
+
+// -------- INTERSECTION OBSERVER API --------
+
+// const observerOptions = {
+//   root: null, // root is the element that the target is intersecting. 'null' here is the current viewport of the screen
+//   threshold: 0.1, // % of intersection at which Observer Callback will be called
+//   threshold: [0, 0.2], // 0 here means that callback will be triggered when our element moves completely out of the view and also as soon as it enters the view. The same will also happen at 20% (second value)
+// };
+// const observerCallback = function (entries, observer) {
+//   entries.forEach((entry) => {
+//     console.log(entry);
+//   });
+// }; // this function will be executed each time the observed element (target) intersects the root-element at a threshold we define
+
+// const observer = new IntersectionObserver(observerCallback, observerOptions);
+// observer.observe(section1); // section1 is a target
+
+//calculation rootMargin dynamically - usefull for responsive websites
+const navHeight = nav.getBoundingClientRect().height;
+
+const headerObserverOptions = {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`, // a "box" of 90px that will be applied outside of our target element (header).
+};
+
+// add .sticky class when we leave the header-element and remove it as soon as wee scroll up and enter it
+const headerObserverCallback = function (entries) {
+  const [entry] = entries; // we destructure the entries-array and take only the first element. basically the same as writing entries.0
+  if (entry.isIntersecting === false) {
+    nav.classList.add('sticky');
+  } else nav.classList.remove('sticky');
+};
+
+const headerObserver = new IntersectionObserver(headerObserverCallback, headerObserverOptions);
+headerObserver.observe(header);
+
+// Reveal section using IntersectionObserver
+
+const reveralSection = function (entries, observer) {
+  // const [entry] = entries;
+
+  entries.forEach((entry) => {
+    // we need a way of knowing which section intersected a viewport --> for that we use target from inside of intersectionObserver in the console
+    if (!entry.isIntersecting) return; // alternatively we can write: if (entry.isIntersecting) {entry.target.classList.remove('section--hidden');}
+
+    entry.target.classList.remove('section--hidden');
+    // unobserving since we don't need to keeop observing sections after they're being revealed.
+    observer.unobserve(entry.target);
+  });
+};
+
+const sectionObserver = new IntersectionObserver(reveralSection, {
+  root: null,
+  threshold: 0.15,
+});
+
+allSections.forEach(function (section) {
+  sectionObserver.observe(section);
+  // hide all the sections so that they're invisible in the beginning when the page is loaded
+  section.classList.add('section--hidden');
+});
+
+// LAZY LOADING IMAGES
+// since our website has several images, we select only those that have [data-src] on them - those are the ones that need to be lazy loaded
+const imgTargets = document.querySelectorAll('img[data-src]');
+
+const loadImg = function (entries, observer) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) return;
+
+  // Replace placeholder image with good-quality image
+  entry.target.src = entry.target.dataset.src; // dataset.src here is "data-src="img/digital.jpg"
+  // remove the blur only after the image is loaded - that's important for the slow networks
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  });
+  observer.unobserve(entry.target);
+};
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: '200px', // selecting rootMarging so that the lazy loading happens before user actually hits the images when scrolling
+});
+
+imgTargets.forEach((img) => {
+  imgObserver.observe(img);
+});
+
+// SLIDER
+
+// Selecting elements
+const slides = document.querySelectorAll('.slide');
+
+const slider = document.querySelector('.slider');
+slider.style.transform = 'scale(0.3) translateX(-1200px)';
+slider.style.overflow = 'visible';
+// Initial position for slides: side by side
+// 0%, 100%, 200%, 300%
+slides.forEach((slide, i) => (slide.style.transform = `translateX(${100 * i}%)`));

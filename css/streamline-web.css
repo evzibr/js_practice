@@ -3,6 +3,7 @@
   --color-white: #ffffff;
   --color-black: #333;
   --color-primary: #53b485;
+  --color-light: #ebfaf3;
   --color-secondary: #fcb830;
   --color-tertiary: #d85c53;
   --color-primary-darker: #479b72;
@@ -80,7 +81,7 @@ body {
 }
 
 .btn:hover {
-  background-color: var(--color-primary-darker);
+  background-color: var(--color-primary);
 }
 
 .btn--text {
@@ -128,7 +129,7 @@ img {
 /* nav and stickly class at the same time */
 .nav.sticky {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: var(--color-light);
 }
 
 .nav__logo {
