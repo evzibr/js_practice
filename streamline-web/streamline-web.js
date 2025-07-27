@@ -421,12 +421,116 @@ imgTargets.forEach((img) => {
 
 // SLIDER
 
-// Selecting elements
-const slides = document.querySelectorAll('.slide');
+// we put our slider-components into a separate function so that we dont pollute a global namespace
+const slider = function () {
+  // Selecting elements
+  const slides = document.querySelectorAll('.slide');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const slider = document.querySelector('.slider');
+  let currentSlide = 0;
+  const maxSlides = slides.length;
+  const dotsContainer = document.querySelector('.dots');
 
-const slider = document.querySelector('.slider');
-slider.style.transform = 'scale(0.3) translateX(-1200px)';
-slider.style.overflow = 'visible';
-// Initial position for slides: side by side
-// 0%, 100%, 200%, 300%
-slides.forEach((slide, i) => (slide.style.transform = `translateX(${100 * i}%)`));
+  // Initial position for slides: side by side
+  // 0%, 100%, 200%, 300%
+  // slides.forEach((slide, i) => (slide.style.transform = `translateX(${100 * i}%)`));
+
+  // Functions
+
+  // this function will create dots underneath the slider for the amount of slider that are there in it
+  const createDots = function () {
+    slides.forEach(function (slide, index) {
+      dotsContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${index}"></button>`
+      );
+    });
+  };
+
+  // create fucntion that makes 'active' slider-dot look darker
+  const activateDot = function (currentSlide) {
+    // first we remove 'active'-class from all the dots
+    document
+      .querySelectorAll('.dots__dot')
+      .forEach((dot) => dot.classList.remove('dots__dot--active'));
+
+    // adding 'active'-class only to the dots corresponding slide of which is active
+    document
+      .querySelector(`.dots__dot[data-slide='${currentSlide}']`)
+      .classList.add('dots__dot--active');
+  };
+
+  const goToSlide = function (slide) {
+    slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`));
+  };
+
+  // When we press the right arrow position for slides will cahnge to
+  // -100%, 0, 100%, 200%, 300%
+
+  const nextSlide = function () {
+    if (currentSlide === maxSlides - 1) {
+      currentSlide = 0;
+    } else currentSlide++;
+
+    goToSlide(currentSlide);
+    activateDot(currentSlide);
+  };
+
+  const prevSlide = function () {
+    if (currentSlide === 0) {
+      return;
+    } else currentSlide--;
+    goToSlide(currentSlide);
+    activateDot(currentSlide);
+  };
+
+  // part of refactoring: we put all teh functions that should be called in teh very beginning in one init-function
+  const init = function () {
+    goToSlide(0); // Starting position is the 0th slide
+    createDots(); // creating dots for the slider
+    activateDot(0); // activating the dot for the 1st slide on page load
+  };
+  init();
+
+  // Event handlers
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') prevSlide(); // normal if condition
+    e.key === 'ArrowRight' && nextSlide(); // shot circuit
+  });
+
+  // attaching eventListener to the dotsContainer using eventDelegation
+  dotsContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const currentSlide = e.target.dataset.slide;
+      goToSlide(currentSlide);
+      activateDot(currentSlide);
+    }
+  });
+};
+
+// calling our slider-element
+slider();
+
+// Different LIFECYCLE DOM EVENTS of the page that are being fired when we open a web-page
+// DomContentLoaded - just for loading HTML & JS
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('HTML parsed and DOM-Tree built!', e);
+});
+
+// load - for loading all the content of the page (images, texts etc.) and external resources are loaded (eg. CSS-files)
+window.addEventListener('load', function (e) {
+  console.log('Page is fully loaded', e);
+});
+
+// Before unload - created immediately before the user is about to leave the page.
+// This should only be used if the user is enterring the data that can be lost when user is leaving the page.
+
+// window.addEventListener('beforeunload', function (e) {
+//   e.preventDefault();
+//   console.log(e);
+//   e.returnValue = '';
+// });
