@@ -328,3 +328,209 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 // });
 
 // ----------------
+
+// -------- INTERSECTION OBSERVER API --------
+
+// const observerOptions = {
+//   root: null, // root is the element that the target is intersecting. 'null' here is the current viewport of the screen
+//   threshold: 0.1, // % of intersection at which Observer Callback will be called
+//   threshold: [0, 0.2], // 0 here means that callback will be triggered when our element moves completely out of the view and also as soon as it enters the view. The same will also happen at 20% (second value)
+// };
+// const observerCallback = function (entries, observer) {
+//   entries.forEach((entry) => {
+//     console.log(entry);
+//   });
+// }; // this function will be executed each time the observed element (target) intersects the root-element at a threshold we define
+
+// const observer = new IntersectionObserver(observerCallback, observerOptions);
+// observer.observe(section1); // section1 is a target
+
+//calculation rootMargin dynamically - usefull for responsive websites
+const navHeight = nav.getBoundingClientRect().height;
+
+const headerObserverOptions = {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`, // a "box" of 90px that will be applied outside of our target element (header).
+};
+
+// add .sticky class when we leave the header-element and remove it as soon as wee scroll up and enter it
+const headerObserverCallback = function (entries) {
+  const [entry] = entries; // we destructure the entries-array and take only the first element. basically the same as writing entries.0
+  if (entry.isIntersecting === false) {
+    nav.classList.add('sticky');
+  } else nav.classList.remove('sticky');
+};
+
+const headerObserver = new IntersectionObserver(headerObserverCallback, headerObserverOptions);
+headerObserver.observe(header);
+
+// Reveal section using IntersectionObserver
+
+const reveralSection = function (entries, observer) {
+  // const [entry] = entries;
+
+  entries.forEach((entry) => {
+    // we need a way of knowing which section intersected a viewport --> for that we use target from inside of intersectionObserver in the console
+    if (!entry.isIntersecting) return; // alternatively we can write: if (entry.isIntersecting) {entry.target.classList.remove('section--hidden');}
+
+    entry.target.classList.remove('section--hidden');
+    // unobserving since we don't need to keeop observing sections after they're being revealed.
+    observer.unobserve(entry.target);
+  });
+};
+
+const sectionObserver = new IntersectionObserver(reveralSection, {
+  root: null,
+  threshold: 0.15,
+});
+
+allSections.forEach(function (section) {
+  sectionObserver.observe(section);
+  // hide all the sections so that they're invisible in the beginning when the page is loaded
+  section.classList.add('section--hidden');
+});
+
+// LAZY LOADING IMAGES
+// since our website has several images, we select only those that have [data-src] on them - those are the ones that need to be lazy loaded
+const imgTargets = document.querySelectorAll('img[data-src]');
+
+const loadImg = function (entries, observer) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) return;
+
+  // Replace placeholder image with good-quality image
+  entry.target.src = entry.target.dataset.src; // dataset.src here is "data-src="img/digital.jpg"
+  // remove the blur only after the image is loaded - that's important for the slow networks
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  });
+  observer.unobserve(entry.target);
+};
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: '200px', // selecting rootMarging so that the lazy loading happens before user actually hits the images when scrolling
+});
+
+imgTargets.forEach((img) => {
+  imgObserver.observe(img);
+});
+
+// SLIDER
+
+// we put our slider-components into a separate function so that we dont pollute a global namespace
+const slider = function () {
+  // Selecting elements
+  const slides = document.querySelectorAll('.slide');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const slider = document.querySelector('.slider');
+  let currentSlide = 0;
+  const maxSlides = slides.length;
+  const dotsContainer = document.querySelector('.dots');
+
+  // Initial position for slides: side by side
+  // 0%, 100%, 200%, 300%
+  // slides.forEach((slide, i) => (slide.style.transform = `translateX(${100 * i}%)`));
+
+  // Functions
+
+  // this function will create dots underneath the slider for the amount of slider that are there in it
+  const createDots = function () {
+    slides.forEach(function (slide, index) {
+      dotsContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${index}"></button>`
+      );
+    });
+  };
+
+  // create fucntion that makes 'active' slider-dot look darker
+  const activateDot = function (currentSlide) {
+    // first we remove 'active'-class from all the dots
+    document
+      .querySelectorAll('.dots__dot')
+      .forEach((dot) => dot.classList.remove('dots__dot--active'));
+
+    // adding 'active'-class only to the dots corresponding slide of which is active
+    document
+      .querySelector(`.dots__dot[data-slide='${currentSlide}']`)
+      .classList.add('dots__dot--active');
+  };
+
+  const goToSlide = function (slide) {
+    slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`));
+  };
+
+  // When we press the right arrow position for slides will cahnge to
+  // -100%, 0, 100%, 200%, 300%
+
+  const nextSlide = function () {
+    if (currentSlide === maxSlides - 1) {
+      currentSlide = 0;
+    } else currentSlide++;
+
+    goToSlide(currentSlide);
+    activateDot(currentSlide);
+  };
+
+  const prevSlide = function () {
+    if (currentSlide === 0) {
+      return;
+    } else currentSlide--;
+    goToSlide(currentSlide);
+    activateDot(currentSlide);
+  };
+
+  // part of refactoring: we put all teh functions that should be called in teh very beginning in one init-function
+  const init = function () {
+    goToSlide(0); // Starting position is the 0th slide
+    createDots(); // creating dots for the slider
+    activateDot(0); // activating the dot for the 1st slide on page load
+  };
+  init();
+
+  // Event handlers
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') prevSlide(); // normal if condition
+    e.key === 'ArrowRight' && nextSlide(); // shot circuit
+  });
+
+  // attaching eventListener to the dotsContainer using eventDelegation
+  dotsContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const currentSlide = e.target.dataset.slide;
+      goToSlide(currentSlide);
+      activateDot(currentSlide);
+    }
+  });
+};
+
+// calling our slider-element
+slider();
+
+// Different LIFECYCLE DOM EVENTS of the page that are being fired when we open a web-page
+// DomContentLoaded - just for loading HTML & JS
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('HTML parsed and DOM-Tree built!', e);
+});
+
+// load - for loading all the content of the page (images, texts etc.) and external resources are loaded (eg. CSS-files)
+window.addEventListener('load', function (e) {
+  console.log('Page is fully loaded', e);
+});
+
+// Before unload - created immediately before the user is about to leave the page.
+// This should only be used if the user is enterring the data that can be lost when user is leaving the page.
+
+// window.addEventListener('beforeunload', function (e) {
+//   e.preventDefault();
+//   console.log(e);
+//   e.returnValue = '';
+// });
